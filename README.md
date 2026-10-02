@@ -30,7 +30,7 @@ A modern browser with WebGL and an internet connection (Three.js loads from a CD
 
 
 # Credits
-the build.mjs file is from SHRINK event from hackclub by Anson Chung, with little bit modified
+the build.mjs file is from SHRINK event from hackclub by Anson Chung, with little bit modified by claude
 
 # License
 its MIT licensed
