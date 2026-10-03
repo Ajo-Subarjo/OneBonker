@@ -22,20 +22,8 @@ npm install
 node build.mjs
 ```
 
-## Features
-
-- Toon-shaded 3D graphics with bold black outlines
-- Moles with eyes, popping up at random
-- Sound effects for popping up, hitting and missing
-- Looping background music
-- Score and countdown timer on screen
-- All audio is generated in the browser, no sound files
-
-## Requirements
-A modern browser with WebGL and an internet connection (Three.js loads from a CDN). Sound turns on after your first tap.
-
 # Credits
-the build.mjs file is from SHRINK event from hackclub by Anson Chung, with little bit modified by claude to work with module
+the build.mjs file is from SHRINK event from hackclub by Anson Chung
 
 # License
 its MIT licensed
