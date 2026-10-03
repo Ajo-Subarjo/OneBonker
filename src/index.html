@@ -1,173 +1,178 @@
+<canvas id="cv"></canvas>
+<style>body{margin:0}</style>
+<script>
+const c = document.getElementById('cv');
+const x = c.getContext('2d');
+const A = new AudioContext;
 
-<canvas id="canvas"></canvas>
-<style>body{margin:0}#h{position:fixed;top:10px;font:bold 64px monospace;}</style>
-<div id="h">TAP TO START</div>
-<script type="module">
-    import * as THR from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-    const scn = new THR.Scene();
-    const cam = new THR.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const ren = new THR.WebGLRenderer({ canvas , antialias: true });
-
-    let run = false, score = 0, time = 30, lock = 0;
-
-    ren.setPixelRatio(window.devicePixelRatio);
-    ren.setSize(window.innerWidth, window.innerHeight);
-    ren.setClearColor(0xffffaa);
-
-    cam.position.set(0, 60 , 45 );
-    cam.lookAt(0, 0, 0);
-
-    const A=new AudioContext;
-    const s=(a,b,t,y="square",v=.8)=>{
-    const o=A.createOscillator(),g=A.createGain(),n=A.currentTime;
-    o.type=y;
-    o.frequency.setValueAtTime(a,n);
-    o.frequency.exponentialRampToValueAtTime(b,n+t);
-    g.gain.setValueAtTime(v ,n);
-    g.gain.exponentialRampToValueAtTime(.001,n+t);
-    o.connect(g).connect(A.destination);
-    o.start();o.stop(n+t);
-    };
-
-    const ray = new THR.Raycaster();
-    const m = new THR.Vector2();
-
-    const l = new THR.AmbientLight(0xffe8c0, 1);
-    const dl = new THR.DirectionalLight( 0xffc76b , 3.5);
-    dl.position.set(5, 3, 15);
-    scn.add(dl, l);
-
-
-    const b = new THR.Mesh(
-    new THR.BoxGeometry(50,50,50),
-    new THR.MeshToonMaterial({color:0x87ff72}));
-
-    const b1 = new THR.Mesh(
-    new THR.BoxGeometry(50.5,20,20),
-    new THR.MeshToonMaterial({color:0x74ecff}));
-
-    adou(b, 1.005);
-    adou(b1, 1.005);
-
-    b.position.set(0, -25,-5);
-    b1.position.set(0, 0,-41);
-
-    scn.add(b, b1);
-
-
-    const GAP = 16 ;
-    const mls = [];
-
-    for (let row = 0; row < 3; row++) {
-    for (let col = 0; col < 3; col++) {
-        const x = (col - 1) * GAP;
-        const z = (row - 1.3) * GAP;
-
-        const hole = new THR.Mesh(
-        new THR.CylinderGeometry(6, 7, 1, 24 ),
-        new THR.MeshToonMaterial({ color: 0xffc83c }));
-        adou(hole, 1.02);
-        hole.position.set(x, 1, z);
-
-
-        const ml = new THR.Mesh(
-        new THR.CapsuleGeometry(5, 10, 5, 24),
-        new THR.MeshToonMaterial({ color: 0xffff7f }));
-
-        const e = new THR.Mesh(
-        new THR.CylinderGeometry(6, 6, 1, 24 ),
-        new THR.MeshToonMaterial({ color: 0xafbfe })
-        );
-        adou(e, 1.08);
-        const el = e.clone();
-
-        e.position.set(-3,5,4);
-        e.scale.set(.3,.2,.4 );
-        e.rotation.set(1.5,0,0.7);
-
-        el.position.set( 3,5,4);
-        el.scale.set(.3,.2,.4);
-        el.rotation.set(1.5,0,-0.7);
-
-        ml.add(e, el);
-        adou(ml, 1.02);
-        ml.userData = { up: false, t:0};
-        ml.position.set(x, -4 , z);
-
-        scn.add(ml, hole);
-        mls.push(ml);
-    }
-    }
-
-
-    setInterval(() => {
-    if (!run) return;
-    const m = mls[Math.floor(Math.random() * mls.length)];
-    if (!m.userData.up) { m.userData.up = true; m.userData.t = 0; s(200,800,.3, "block")}
-    }, 800);
-
-    setInterval(() => {
-    if (!run) return;
-    h.textContent = "SKOR:" + score + "   TIME:" + --time;
-    if (time <= 0) { run = false; lock = Date.now() + 3000; h.textContent = "FINISH!!! SKOR:" + score }
-    },1000);
-
-    let i=0,f;
-    setInterval(()=>run&&s(f=220*2**([0,4,7,12,7,4][i++%6]/12),f,.2,.65),250)
-
-
-    function adou(ob, thick) {
-    const out = new THR.Mesh(
-        ob.geometry,
-        new THR.MeshBasicMaterial({
-            color: 0x000000,
-            side: THR.BackSide
-        }));
-    out.scale.setScalar(thick);
-    ob.add(out);
-    }
-
-    onpointerdown= e => {
-    if (!run) {
-        if (Date.now() < lock) return;
-        run = true;
-        score = 0;
-        time = 30;
-        h.textContent = "SKOR:0 TIME:30";
-    };
-    A.resume()
-
-    ray.setFromCamera({x:e.clientX / innerWidth * 2 - 1, y: -(e.clientY / innerHeight) * 2 + 1}, cam);
-
-    const m = ray.intersectObjects(mls, false)[0]?.object;
-
-    if (m?.userData.up) {
-        m.userData.up = false;
-        m.userData.t = 0;
-        m.position.y = -4;
-        score++;
-        h.textContent = "SKOR:" + score + " TIME:" + time;
-        s(500, 50, .15, "sawtooth");
-    }else s(150, 100, .3, "square");
+const s = (a, b, t, y = 'square', v = .5) => {
+  const o = A.createOscillator();
+  const g = A.createGain();
+  const n = A.currentTime;
+  o.type = y;
+  o.frequency.setValueAtTime(a, n);
+  o.frequency.exponentialRampToValueAtTime(b, n + t);
+  g.gain.setValueAtTime(v, n);
+  g.gain.exponentialRampToValueAtTime(.001, n + t);
+  o.connect(g).connect(A.destination);
+  o.start();
+  o.stop(n + t);
 };
 
-    const clock = new THR.Clock();
+let run = false, skor = 0, timeleft = 30, lockuntil = 0;
+let message = 'TAP TO START', lastFrameTime = 0, noteIndex = 0;
+const MOLE_COUNT = 9;
 
-    function animate() {
-    requestAnimationFrame(animate);
-    const dt = clock.getDelta();
+const moles = Array.from({ length: MOLE_COUNT }, () => ({
+  isUp: false,
+  progress: 0,
+  y: 0
+}));
 
-    for (const m of mls) {
-        const d = m.userData;
-        if (d.up){
-        d.t += dt;
-        m.position.y = -4 + Math.sin(d.t * Math.PI) * 6;
-        if (d.t >= 1) { d.up = false; m.position.y = -4}
-        }
+let width, height, scale;
+function resize() {
+  width = c.width = window.innerWidth;
+  height = c.height = window.innerHeight;
+  scale = Math.min(width, height * .8) / 3.4;
+}
+resize();
+window.onresize = resize;
+
+function getHolePos(i) {
+  const col = i % 3;
+  const row = Math.floor(i / 3);
+  return {
+    x: width / 2 + (col - 1) * scale * 1.1,
+    y: height / 2 + (row - 1) * scale * 1.1 + scale * .4
+  };
+}
+
+setInterval(() => {
+  if (!run) return;
+  const m = moles[Math.floor(Math.random() * moles.length)];
+  if (!m.isUp) {
+    m.isUp = true;
+    m.progress = 0;
+    s(200, 800, .3, 'sawtooth');
+  }
+}, 800);
+
+
+setInterval(() => {
+  if (!run) return;
+  if (--timeleft <= 0) {
+    run = false;
+    lockuntil = Date.now() + 3000;
+    message = 'FINISH!!! SKOR:' + skor;
+  }
+}, 1000);
+
+const ARP = [0, 4, 7, 12, 7, 4];
+setInterval(() => {
+  if (!run) return;
+  const f = 220 * 2 ** (ARP[noteIndex++ % ARP.length] / 12);
+  s(f, f, .2, 'square', .3);
+}, 250);
+
+window.onpointerdown = e => {
+  if (!run) {
+    if (Date.now() < lockuntil) return;
+    run = true;
+    skor = 0;
+    timeleft = 30;
+  }
+  A.resume();
+
+  let hit = false;
+  moles.forEach((m, i) => {
+    if (hit || !m.isUp) return;
+    const hole = getHolePos(i);
+    if (Math.hypot(e.clientX - hole.x, e.clientY - (m.y + scale * .35)) < scale * .45) {
+      hit = true;
+      m.isUp = false;
+      skor++;
+      s(500, 50, .15, 'sawtooth');
     }
-    ren.render(scn, cam);
+  });
+  if (!hit) s(150, 100, .3);
+};
+
+function ball(px,py,rx,ry,fill,line, rot = 0) {
+  x.beginPath();
+  x.ellipse(px,py,rx,ry,rot,0,Math.PI*2);
+  x.fillStyle = fill;
+  x.fill();
+  if (line) {
+    x.strokeStyle = '#000';
+    x.lineWidth = 3;
+    x.stroke();
+  }
+}
+
+function dmole(px,py,r) {
+  const cy = py + 3*.35
+  ball(px + r * .30, cy + r * -0.25, r * .12, r * .2, '#3b2f10', true, 0.3)
+  ball(px + r * -.30, cy + r * -0.25, r * .12, r * .2, '#3b2f10', true, -0.3)
+  ball(px, cy + r * .3, r * .38, r * .55, '#8b5a2b', true);
+  ball(px - r * .14, cy + r * .05, r * .06, r * .09, '#000', true);
+  ball(px + r * .14, cy + r * .05, r * .06, r * .09, '#000', true);
+  ball(px, cy + r*.18, r*.08, r*.06, '#3b2110', true,);
+}
+
+function draw(ts) {
+  requestAnimationFrame(draw);
+
+  const dt = Math.min((ts - lastFrameTime) / 1000, .1);
+  lastFrameTime = ts;
+
+  x.fillStyle = '#ffffaa';
+  x.fillRect(0, 0, width, height);
+
+  x.textAlign = 'center';
+  x.fillStyle = '#000';
+  x.font = 'bold ' + scale * .3 + 'px monospace';
+  x.fillText(
+    run ? `SKOR:${skor}  TIME:${timeleft}` : message,
+    width / 2,
+    scale * .4
+  );
+
+  x.font = 'bold ' + scale * .5 + 'px monospace';
+
+  moles.forEach((m, i) => {
+    const hole = getHolePos(i);
+
+    if (m.isUp) {
+      m.progress += dt;
+      if (m.progress >= 1) m.isUp = false;
     }
-    animate();
+    m.y = hole.y - Math.sin(m.progress * Math.PI) * scale * .6;
 
+    x.beginPath();
+    x.ellipse(hole.x,hole.y,scale*.5,scale*.2,0,Math.PI,Math.PI*2);
+    x.fillStyle = '#ffcc33';
+    x.fill();
+    x.strokeStyle = '#000';
+    x.lineWidth = 3;
+    x.stroke()
 
-    </script>
+    if (m.isUp) {
+      x.save();
+      x.beginPath();
+      x.rect(hole.x - scale, hole.y - scale * 2, scale * 2, scale * 2);
+      x.clip();
+      dmole(hole.x,m.y, scale)
+      x.restore();
+    }
+
+    x.beginPath();
+    x.ellipse(hole.x,hole.y,scale*.5,scale*.2,0,0,Math.PI);
+    x.fillStyle = '#ffcc33';
+    x.fill();
+    x.strokeStyle = '#000';
+    x.lineWidth = 3;
+    x.stroke()
+  });
+}
+requestAnimationFrame(draw);
+</script>

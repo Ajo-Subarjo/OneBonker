@@ -15,24 +15,12 @@ function glsl(code) {
 }
 
 let html = "";
-const re = /(<script[^>]*>[\s\S]*?<\/script>|<style[^>]*>[\s\S]*?<\/style>)/;
-for (const part of src.split(re)) {
-  const m = part.match(/^<script([^>]*)>([\s\S]*?)<\/script>$/);
-  if (m) {
-    const [, attrs, body] = m;
-    let out;
-    if (/importmap/.test(attrs)) {
-      out = JSON.stringify(JSON.parse(body));          // minify JSON
-    } else {
-      const js = body.replace(/glsl`([^`]*)`/g, (_, s) => JSON.stringify(glsl(s)));
-      out = (await minify(js, {
-        module: /module/.test(attrs),
-        toplevel: true,
-        compress: { passes: 3 },
-      })).code;
-    }
-    html += `<script${attrs}>${out}</script>`;
-  } else if (part.startsWith("<style")) {
+for (const part of src.split(/(<script>[\s\S]*?<\/script>|<style>[\s\S]*?<\/style>)/)) {
+  if (part.startsWith("<script>")) {
+    const js = part.slice(8, -9).replace(/glsl`([^`]*)`/g, (_, s) => JSON.stringify(glsl(s)));
+    const { code } = await minify(js, { toplevel: true, compress: { passes: 3 } });
+    html += "<script>" + code + "</script>";
+  } else if (part.startsWith("<style>")) {
     html += part
       .replace(/\/\*[\s\S]*?\*\//g, "")
       .replace(/\s+/g, " ")
