@@ -1,4 +1,4 @@
-# DISCLAIMER
+# DISCLAIMER!!!!!!!
 to the reviewer im sorry to add 3d badge it is 3d before and in the shrink is the old uri text. the guide came after i ship my project so i didnt know i cant use libraries
 and the new uri is in the dist. it became 2d using canvas2d.
 
