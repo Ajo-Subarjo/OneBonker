@@ -14,7 +14,13 @@ A tiny 3D whack-a-mole game with a cartoon look, built with Three.js. The whole 
 - Tap or click anywhere to start.
 - Moles pop up from a 3x3 grid of holes. Tap a mole before it ducks back down to score a point.
 - You have 30 seconds. Try to beat your best score.
-- When time runs out, your final score is shown. Tap again to play another round.
+- When time runs out, your final score is shown. After waiting 3 second tap again to play another round.
+
+## Build
+```
+npm install
+node build.mjs
+```
 
 ## Features
 
@@ -28,9 +34,8 @@ A tiny 3D whack-a-mole game with a cartoon look, built with Three.js. The whole 
 ## Requirements
 A modern browser with WebGL and an internet connection (Three.js loads from a CDN). Sound turns on after your first tap.
 
-
 # Credits
-the build.mjs file is from SHRINK event from hackclub by Anson Chung, with little bit modified by claude
+the build.mjs file is from SHRINK event from hackclub by Anson Chung, with little bit modified by claude to work with module
 
 # License
 its MIT licensed
