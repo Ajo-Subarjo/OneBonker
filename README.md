@@ -2,6 +2,8 @@
 to the reviewer im sorry to add 3d badge it is 3d before and in the shrink is the old uri text. the guide came after i ship my project so i didnt know i cant use libraries
 and the new uri is in the dist. it became 2d using canvas2d and that extra 2.5 hour (total 7 hour 51 minutes) in hackatime 🥲.
 
+and i cant ushipp because it say: `A reviewer already got to this one, so it can't be unshipped.`
+
 
 # Whack-a-Mole 3D
 
